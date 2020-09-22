@@ -7,4 +7,4 @@ And this paper has been accepted by the
 # 25th International Conference on Pattern Recognition (ICPR2020).
 The paper link is 
 # http://arxiv.org/abs/2007.10778. 
-If you are interested in my research or have any questions, please contact me.
+If you are interested in my research or have any questions, please contact me at gucheng_hs@whut.edu.cn.
