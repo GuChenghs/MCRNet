@@ -197,7 +197,7 @@ class ResNet(nn.Module):
         return x
 
 
-
+ 
 
 def resnet12(keep_prob=1.0, avg_pool=False, **kwargs):
     """Constructs a ResNet-12 model.
