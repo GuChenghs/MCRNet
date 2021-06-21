@@ -131,7 +131,41 @@ class BasicBlock(nn.Module):
 
         return out
 
+class GNN_Block(torch.nn.Module):
+    #latent_dim = 8
 
+    def __init__(self, encoder):
+        super(GNN_Block, self).__init__()
+        self.encoder = encoder
+        self.relu = nn.LeakyReLU(0.1)
+        #self.decoder = decoder
+        # self._enc_mu = torch.nn.Linear(100, 8)
+        # self._enc_log_sigma = torch.nn.Linear(100, 8)
+        self._enc_mu = torch.nn.Conv2d(32,64,kernel_size= 3,stride= 1,padding=1)
+        self._enc_log_sigma = torch.nn.Conv2d(32,64,kernel_size= 3,stride= 1,padding=1)
+
+    def _sample_latent(self, h_enc):
+        """
+        Return the latent normal sample z ~ N(mu, sigma^2)
+        """
+        mu = self._enc_mu(h_enc)   #32*6*6
+        log_sigma = self._enc_log_sigma(h_enc)  #32*6*6
+        sigma = torch.exp(log_sigma)
+        std_z = torch.from_numpy(np.random.normal(0, 1, size=sigma.size())).float()     #sample from normal distribution with size which could be none int or matrix
+
+        self.z_mean = mu
+        self.z_sigma = sigma
+        std_z = std_z.cuda()
+
+        return mu + sigma * Variable(std_z, requires_grad=False)  # Reparameterization trick，without daoshu  32*8
+
+    def forward(self, state):
+        h_enc = self.encoder(state)
+        h_enc = h_enc.cuda()
+        z = self._sample_latent(h_enc)
+        z = z.cuda()
+        return z
+    
 class ResNet(nn.Module):
 
     def __init__(self, block, keep_prob=1.0, avg_pool=False, drop_rate=0.0, dropblock_size=5):
